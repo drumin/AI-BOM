@@ -473,12 +473,14 @@ describe('baselines', () => {
     const page = await open({ hash: '#baselines' });
     await page.waitForSelector('.controls');
     await choose(page, 'ISO/IEC 42001');
+    const saved = page.waitForResponse((r) => r.request().method() !== 'GET' && r.url().includes('/api/')); // the preference is saved in the background
     await page.getByRole('radiogroup', { name: 'Which controls' }).getByText(/^Needs your answer/).click();
-    await page.waitForTimeout(400); // the preference is saved in the background
+    await saved;
     const again = await page.context().browser()!.newContext();
     const p2 = await again.newPage();
     await p2.goto(page.url());
     await p2.waitForSelector('.baselines .panel');
+    await p2.waitForFunction(() => [...document.querySelectorAll<HTMLInputElement>('input[type=radio]')].some((r) => r.checked && /ISO\/IEC 42001/.test(r.closest('label')?.textContent ?? '')));
     expect(await p2.getByRole('radio', { name: 'ISO/IEC 42001' }).isChecked()).toBe(true);
     expect(await p2.getByRole('radio', { name: /^Needs your answer/ }).isChecked()).toBe(true);
     await again.close();

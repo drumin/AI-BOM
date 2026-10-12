@@ -1070,7 +1070,7 @@ describe('Activity: conversation, search, reasons and muting', () => {
     await page.getByRole('button', { name: /^Muted flags/ }).click();
     await page.getByRole('button', { name: 'Flag again' }).click();
     await page.getByRole('button', { name: /^Muted flags/ }).waitFor({ state: 'detached' });
-    expect(await page.locator('.timeline li.flag').filter({ hasText: 'aws s3 rm' }).count()).toBeGreaterThan(0);
+    await page.locator('.timeline li.flag').filter({ hasText: 'aws s3 rm' }).first().waitFor();
     await page.close();
   });
 

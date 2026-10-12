@@ -1,0 +1,20 @@
+# Example: check AI agent configuration on every pull request.
+# Copy this file into your own repository's .github/workflows/.
+name: ai-bom
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: drumin/ai-scanner@main
+        with:
+          fail-on: dangerous

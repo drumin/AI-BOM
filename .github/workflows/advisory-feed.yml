@@ -1,0 +1,36 @@
+name: advisory-feed
+
+on:
+  push:
+    branches: [main]
+    paths: ['feed/advisories.json']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - name: Sign the feed
+        env:
+          AI_BOM_FEED_KEY: ${{ secrets.AI_BOM_FEED_KEY }}
+        run: |
+          if [ -z "$AI_BOM_FEED_KEY" ]; then
+            echo "::notice::AI_BOM_FEED_KEY is not set; skipping feed publication."
+            exit 0
+          fi
+          npx tsx scripts/sign-feed.ts --out feed-dist
+      - name: Upload to the rolling "advisories" release
+        if: hashFiles('feed-dist/advisories.json') != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view advisories >/dev/null 2>&1 || gh release create advisories --title "Advisory feed" --notes "Signed MCP advisory feed consumed by \`ai-bom update\`. Updated automatically." --latest=false
+          gh release upload advisories feed-dist/advisories.json feed-dist/advisories.json.sig --clobber

@@ -1,0 +1,43 @@
+{
+  "name": "ai-bom-vscode",
+  "displayName": "AI-BOM: AI config security",
+  "description": "Shows risky MCP servers, hooks, skills and agent settings right in the files that configure them. Runs the local ai-bom scanner; nothing leaves your machine.",
+  "version": "0.1.0",
+  "publisher": "ai-bom",
+  "license": "MIT",
+  "engines": { "vscode": "^1.90.0" },
+  "categories": ["Linters", "Other"],
+  "main": "./out/extension.js",
+  "activationEvents": [
+    "workspaceContains:.mcp.json",
+    "workspaceContains:.vscode/mcp.json",
+    "workspaceContains:.cursor/mcp.json",
+    "workspaceContains:.claude/settings.json",
+    "workspaceContains:CLAUDE.md",
+    "workspaceContains:AGENTS.md",
+    "onCommand:aiBom.check"
+  ],
+  "contributes": {
+    "commands": [
+      { "command": "aiBom.check", "title": "AI-BOM: Check this workspace" },
+      { "command": "aiBom.dashboard", "title": "AI-BOM: Open dashboard" },
+      { "command": "aiBom.fix", "title": "AI-BOM: Fix a finding…" }
+    ],
+    "configuration": {
+      "title": "AI-BOM",
+      "properties": {
+        "aiBom.command": { "type": "string", "default": "ai-bom", "description": "How to run ai-bom, e.g. \"ai-bom\" or \"node /path/to/ai-scanner/dist/cli.js\"." },
+        "aiBom.checkOnSave": { "type": "boolean", "default": true, "description": "Re-check when an AI config file is saved." }
+      }
+    }
+  },
+  "scripts": {
+    "build": "tsc -p .",
+    "package": "npx @vscode/vsce package"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/vscode": "^1.90.0",
+    "typescript": "^5.6.0"
+  }
+}

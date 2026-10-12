@@ -1,0 +1,63 @@
+name: AI-BOM pre-flight check
+description: Scan a repository's AI agent configuration (MCP servers, hooks, skills, auto-run tasks) and report risks to GitHub code scanning.
+branding:
+  icon: shield
+  color: blue
+
+inputs:
+  path:
+    description: Directory to check
+    default: '.'
+  fail-on:
+    description: 'Fail the job when the verdict is at least this bad: dangerous, review or never'
+    default: dangerous
+  sarif-file:
+    description: Where to write the SARIF results
+    default: ai-bom.sarif
+  upload-sarif:
+    description: Upload results to GitHub code scanning (needs security-events write permission)
+    default: 'true'
+
+outputs:
+  verdict:
+    description: safe, review or dangerous
+    value: ${{ steps.check.outputs.verdict }}
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 22
+    - name: Build ai-bom
+      shell: bash
+      working-directory: ${{ github.action_path }}
+      run: npm ci --no-audit --no-fund && npm run build:cli
+    - name: Check
+      id: check
+      shell: bash
+      env:
+        TARGET: ${{ inputs.path }}
+        SARIF: ${{ inputs.sarif-file }}
+      run: |
+        set +e
+        node "${{ github.action_path }}/dist/cli.js" check "$TARGET" --sarif "$SARIF"
+        code=$?
+        set -e
+        case $code in 0) v=safe;; 1) v=review;; 2) v=dangerous;; *) echo "ai-bom failed (exit $code)"; exit $code;; esac
+        echo "verdict=$v" >> "$GITHUB_OUTPUT"
+    - name: Upload to code scanning
+      if: always() && inputs.upload-sarif == 'true' && hashFiles(inputs.sarif-file) != ''
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: ${{ inputs.sarif-file }}
+        category: ai-bom
+    - name: Apply fail-on
+      shell: bash
+      env:
+        VERDICT: ${{ steps.check.outputs.verdict }}
+        FAIL_ON: ${{ inputs.fail-on }}
+      run: |
+        if [ "$FAIL_ON" = "review" ] && [ "$VERDICT" != "safe" ]; then echo "::error::AI-BOM verdict: $VERDICT"; exit 1; fi
+        if [ "$FAIL_ON" = "dangerous" ] && [ "$VERDICT" = "dangerous" ]; then echo "::error::AI-BOM verdict: dangerous"; exit 1; fi
+        echo "AI-BOM verdict: $VERDICT"

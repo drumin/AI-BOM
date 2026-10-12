@@ -1,0 +1,63 @@
+{
+  "name": "ai-bom",
+  "version": "0.3.0",
+  "description": "Local-first AI Bill of Materials: inventory the MCP servers, skills, plugins, hooks and agent configs on your machine and flag risky ones.",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "ai-bom": "dist/cli.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node dist/cli.js",
+    "build": "npm run build:cli && npm run build:web",
+    "build:cli": "tsc -p tsconfig.json && chmod +x dist/cli.js",
+    "build:web": "vite build --config web/vite.config.ts",
+    "dev:web": "vite --config web/vite.config.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p web/tsconfig.json --noEmit",
+    "test": "vitest run",
+    "scan": "tsx src/cli.ts scan",
+    "ui": "tsx src/cli.ts ui",
+    "dummy": "tsx scripts/dummy-real.ts",
+    "demo": "npm run build:web && tsx scripts/demo.ts",
+    "prepublishOnly": "npm run typecheck && npm test && npm run build",
+    "feed:keygen": "tsx scripts/feed-keygen.ts",
+    "feed:sign": "tsx scripts/sign-feed.ts",
+    "test:e2e": "npm run build:web && vitest run -c vitest.e2e.config.ts",
+    "e2e:install": "playwright install chromium"
+  },
+  "keywords": [
+    "ai-bom",
+    "mcp",
+    "skills",
+    "security",
+    "shadow-ai",
+    "cyclonedx"
+  ],
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.129.0",
+    "jsonc-parser": "^3.3.1",
+    "smol-toml": "^1.9.0",
+    "yaml": "^2.9.1",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
+    "@types/node": "^22.20.4",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.1",
+    "playwright": "^1.63.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "tsx": "^4.23.15",
+    "typescript": "^5.9.3",
+    "vite": "^8.3.1",
+    "vitest": "^5.0.2"
+  }
+}

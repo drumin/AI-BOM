@@ -1,0 +1,50 @@
+/** Generated from MITRE ATLAS 2026.09 (dist/v6/ATLAS-2026.09.yaml); only techniques AI-BOM maps findings to. */
+export const ATLAS_VERSION = '2026.09';
+
+/** All ATLAS tactics, in matrix order. */
+export const ATLAS_TACTICS: { id: string; name: string }[] = [
+  { id: 'AML.TA0002', name: 'Reconnaissance' },
+  { id: 'AML.TA0003', name: 'Resource Development' },
+  { id: 'AML.TA0004', name: 'Initial Access' },
+  { id: 'AML.TA0000', name: 'AI Model Access' },
+  { id: 'AML.TA0005', name: 'Execution' },
+  { id: 'AML.TA0006', name: 'Persistence' },
+  { id: 'AML.TA0012', name: 'Privilege Escalation' },
+  { id: 'AML.TA0007', name: 'Defense Evasion' },
+  { id: 'AML.TA0013', name: 'Credential Access' },
+  { id: 'AML.TA0008', name: 'Discovery' },
+  { id: 'AML.TA0015', name: 'Lateral Movement' },
+  { id: 'AML.TA0009', name: 'Collection' },
+  { id: 'AML.TA0001', name: 'AI Attack Adaptation' },
+  { id: 'AML.TA0014', name: 'Command and Control' },
+  { id: 'AML.TA0010', name: 'Exfiltration' },
+  { id: 'AML.TA0011', name: 'Impact' },
+];
+
+export const ATLAS_TECHNIQUES: Record<string, { name: string; tactics: string[]; parent?: string }> = {
+  'AML.T0010.001': { name: 'AI Supply Chain Compromise: AI Software', tactics: ['AML.TA0004'], parent: 'AML.T0010' },
+  'AML.T0010.003': { name: 'AI Supply Chain Compromise: Model', tactics: ['AML.TA0004'], parent: 'AML.T0010' },
+  'AML.T0010.005': { name: 'AI Supply Chain Compromise: AI Agent Tool', tactics: ['AML.TA0004'], parent: 'AML.T0010' },
+  'AML.T0011': { name: 'User Execution', tactics: ['AML.TA0005'] },
+  'AML.T0011.000': { name: 'User Execution: Unsafe AI Artifacts', tactics: ['AML.TA0005'], parent: 'AML.T0011' },
+  'AML.T0011.001': { name: 'User Execution: Malicious Package', tactics: ['AML.TA0005'], parent: 'AML.T0011' },
+  'AML.T0011.002': { name: 'User Execution: Poisoned AI Agent Tool', tactics: ['AML.TA0005'], parent: 'AML.T0011' },
+  'AML.T0012': { name: 'Valid Accounts', tactics: ['AML.TA0004','AML.TA0012','AML.TA0015'] },
+  'AML.T0025': { name: 'Exfiltration via Cyber Means', tactics: ['AML.TA0010'] },
+  'AML.T0050': { name: 'Command and Scripting Interpreter', tactics: ['AML.TA0005'] },
+  'AML.T0051.001': { name: 'LLM Prompt Injection: Indirect', tactics: ['AML.TA0005'], parent: 'AML.T0051' },
+  'AML.T0053': { name: 'AI Agent Tool Invocation', tactics: ['AML.TA0005','AML.TA0012','AML.TA0015'] },
+  'AML.T0055': { name: 'Unsecured Credentials', tactics: ['AML.TA0013'] },
+  'AML.T0057': { name: 'LLM Data Leakage', tactics: ['AML.TA0010'] },
+  'AML.T0068': { name: 'LLM Prompt Obfuscation', tactics: ['AML.TA0007'] },
+  'AML.T0080': { name: 'AI Agent Context Poisoning', tactics: ['AML.TA0006'] },
+  'AML.T0081': { name: 'Modify AI Agent Configuration', tactics: ['AML.TA0006','AML.TA0007'] },
+  'AML.T0083': { name: 'Credentials from AI Agent Configuration', tactics: ['AML.TA0013'] },
+  'AML.T0085.001': { name: 'Data from AI Services: AI Agent Tools', tactics: ['AML.TA0009'], parent: 'AML.T0085' },
+  'AML.T0086': { name: 'Exfiltration via AI Agent Tool Invocation', tactics: ['AML.TA0010'] },
+  'AML.T0099': { name: 'AI Agent Tool Data Poisoning', tactics: ['AML.TA0006'] },
+  'AML.T0109': { name: 'AI Supply Chain Rug Pull', tactics: ['AML.TA0007'] },
+  'AML.T0110': { name: 'AI Agent Tool Poisoning', tactics: ['AML.TA0006'] },
+  'AML.T0112.000': { name: 'Machine Compromise: Local AI Agent', tactics: ['AML.TA0011'], parent: 'AML.T0112' },
+  'AML.T0132': { name: 'Misconfigured or Publicly Exposed AI Services', tactics: ['AML.TA0004'] },
+};

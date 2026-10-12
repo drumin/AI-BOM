@@ -137,6 +137,7 @@ function wrap(kind: SandboxKind, cmd: { command: string; args: string[] }, fakeH
 
 /** How long to keep a server alive after its tool list arrives, to catch start-up network attempts. */
 const SETTLE_MS = 400;
+const SETTLE_MAX_MS = 3000;
 
 const NETWORK_ERR = /(ENOTFOUND|EAI_AGAIN|ECONNREFUSED|ENETUNREACH|getaddrinfo|Network is unreachable|Temporary failure in name resolution|Name or service not known|nodename nor servname|NameResolutionError|ConnectError|fetch failed)[^\n]{0,120}/gi;
 
@@ -206,6 +207,12 @@ export async function inspectLive(a: Asset, home: string, staticTools: DeclaredT
     // A server that phones home does it at start-up, and a blocked attempt takes a few ms to fail and print.
     // Killing the moment the tool list arrives can beat that, so let stderr settle first.
     await new Promise((r) => setTimeout(r, SETTLE_MS));
+    // Slow machines (CI) can take longer; wait up to SETTLE_MAX_MS for a blocked attempt to show up.
+    for (let waited = SETTLE_MS; waited < SETTLE_MAX_MS && !NETWORK_ERR.test(stderr); waited += 200) {
+      NETWORK_ERR.lastIndex = 0;
+      await new Promise((r) => setTimeout(r, 200));
+    }
+    NETWORK_ERR.lastIndex = 0;
   } catch (e) {
     base.error = (e as Error).message;
   } finally {
